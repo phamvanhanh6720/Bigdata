@@ -1,0 +1,1 @@
+from .spiders.alonhadat import AlonhadatSpider

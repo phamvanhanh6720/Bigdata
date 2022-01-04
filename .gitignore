@@ -1,0 +1,4 @@
+.idea
+create_topic.ipynb
+**/*.pyc
+**/__pycache__/
