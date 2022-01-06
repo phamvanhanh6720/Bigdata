@@ -1,12 +1,9 @@
-import os
 from time import time
 
-import pymongo
-from scrapy import signals, Spider
+from scrapy import Spider
 from scrapy.responsetypes import responsetypes
 from scrapy.utils.request import request_fingerprint
 from scrapy.http import Headers
-from scrapy.exceptions import NotConfigured
 
 
 try:
@@ -75,14 +72,8 @@ class MongoCacheStorage(object):
             'headers': headers
         }
 
-        if spider.name == 'chotot':
-            if 'page' in response.url or 'robots' in response.url:
-                return
-        elif spider.name == 'homedy':
-            if 'cho-thue-can-ho-ha-noi/p' in response.url or 'robots' in request.url:
-                return
-        elif spider.name == 'alonhadat':
-            if '/nha-dat/cho-thue/can-ho-chung-cu/1/ha-noi/trang' in response.url or 'robots' in request.url:
+        if spider.name == 'alonhadat':
+            if 'trang' in response.url or 'robots' in request.url:
                 return
 
         try:

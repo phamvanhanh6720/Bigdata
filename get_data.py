@@ -1,6 +1,7 @@
 import json
 import base64
 import hashlib
+from json import dump
 
 import pandas as pd
 from confluent_kafka import Consumer
@@ -22,16 +23,18 @@ while True:
         continue
 
     data_dict = json.loads(msg.value().decode('utf-8'))
+    """
     columns = sorted(list(data_dict.keys()))
     for key in data_dict.keys():
         data_dict[key] = [data_dict[key]]
     df = pd.DataFrame.from_dict(data_dict)
+    """
     try:
         url = str(data_dict['url'])
         hash_url = hashlib.md5(url.encode()).hexdigest()
 
-        with client_hdfs.write('/alonhadatnews/{}.csv'.format(hash_url), encoding='utf-8') as writer:
-            df.to_csv(writer)
+        with client_hdfs.write('/new_alonhadatnews_json/{}.jsonl'.format(hash_url), encoding='utf-8') as writer:
+            dump(data_dict, writer)
         print('Write {} to Hdfs successfully'.format(data_dict['url']))
     except:
         print('{} existed in hdfs'.format(data_dict['url']))

@@ -25,7 +25,8 @@ class AlonhadatSpider(scrapy.Spider):
         'MAX_CACHED_REQUEST': 4000,
         'ITEM_PIPELINES': {
             'WebScrapy.pipelines.AlonhadatPipeline': 300
-        }
+        },
+        'HTTPCACHE_STORAGE': 'WebScrapy.extensions.MongoCacheStorage'
     }
 
     def __init__(self):
@@ -42,7 +43,7 @@ class AlonhadatSpider(scrapy.Spider):
         self.topic = 'crawled_news'
         self.kafka = {'bootstrap.servers': '127.0.0.1:9092'}
 
-        with open('../urls/start_urls_hanoi.txt', 'r') as file:
+        with open('WebScrapy/urls/start_urls_hanoi.txt', 'r') as file:
             start_urls = file.readlines()
             self.start_urls = [url.strip() for url in start_urls if url != '']
             print("Total start urls: {}".format(len(start_urls)))
@@ -72,6 +73,7 @@ class AlonhadatSpider(scrapy.Spider):
         news_url_list: List[str] = response.css('div#content-body div#left div.content-item div.ct_title a::attr(href)').getall()
 
         page = response.request.url
+        current_page = 1
 
         if 'trang' in page:
             current_page = int(page.split('--')[-1].replace('.html', ''))
@@ -102,7 +104,8 @@ class AlonhadatSpider(scrapy.Spider):
 
             max_cached_request = 4000
 
-            if self.num_cached_request <= max_cached_request:
+            # if self.num_cached_request <= max_cached_request:
+            if current_page <= 60:
                 req = scrapy.Request(url=next_page, callback=self.parse)
                 self.logger.info("Trying to follow link '{}'".format(req.url))
 
